@@ -150,6 +150,7 @@ class MusicTransformer(nn.Module):
             #print(f"cur_i: {cur_i}, gen_seq[..., :cur_i]: {gen_seq[..., :cur_i].shape}, pmp: {pmp.shape} pmp[..., :cur_i]: {pmp[..., :cur_i].shape}")
             y = self.softmax(self.forward(gen_seq[..., :cur_i], pmp[..., :cur_i] if pmp is not None else None))[..., :TOKEN_END]
             token_probs = y[:, cur_i-1, :]
+            token_probs = token_probs.cpu() # to allow numpy.vstack
             total_probs = numpy.vstack((total_probs, token_probs)) ### append token probs to matrix
 
             if(beam == 0):
