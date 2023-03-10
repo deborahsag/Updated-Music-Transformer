@@ -1,6 +1,5 @@
 import argparse
 import os
-import pickle
 
 import numpy as np
 from scipy.stats import entropy
@@ -17,32 +16,57 @@ def main():
 
     directory = args.midi_dir
 
-    entropies = []
-
-    print("Pitch class histograms entropies:")
-    print()
+    original = {}
+    primer = {}
+    generated = {}
 
     for root, dirs, files in os.walk(directory):
         for midi_name in files:
             midi_path = os.path.join(root, midi_name)
+            ext = os.path.splitext(midi_path)[-1].lower()
 
-            if os.path.isfile(midi_path):
-                ext = os.path.splitext(midi_path)[-1].lower()
+            if ext == ".mid":
+                midi_data = pretty_midi.PrettyMIDI(midi_path)
+                hist = midi_data.get_pitch_class_histogram()
+                e = entropy(hist)
 
-                if ext == ".mid":
-                    midi_data = pretty_midi.PrettyMIDI(midi_path)
-                    hist = midi_data.get_pitch_class_histogram()
+                if midi_name.startswith("original"):
+                    original[midi_name] = e
 
-                    e = entropy(hist)
-                    entropies.append(e)
+                if midi_name.startswith("primer"):
+                    primer[midi_name] = e
 
-                    print(f"{midi_name} \t entropy: {e}")
+                if midi_name.startswith("rand"):
+                    generated[midi_name] = e
 
-    ent = np.array(entropies)
-    ent_mean = np.mean(ent)
+    for name, ent in original.items():
+        print(f"{name} \t entropy: {ent}")
 
+    ori_ent = np.array(list(original.values()))
+    ori_mean = np.mean(ori_ent)
+    print(f"Mean of the entropies of the original samples: {ori_mean}")
     print()
-    print(f"Mean of entropies: {ent_mean}")
+
+    for name, ent in primer.items():
+        print(f"{name} \t entropy: {ent}")
+
+    primer_ent = np.array(list(primer.values()))
+    primer_mean = np.mean(primer_ent)
+    print(f"Mean of the entropies of the primer files: {primer_mean}")
+    print()
+
+    for name, ent in generated.items():
+        print(f"{name} \t entropy: {ent}")
+
+    gen_ent = np.array(list(generated.values()))
+    gen_mean = np.mean(gen_ent)
+    print(f"Mean of the entropies of the generated samples: {gen_mean}")
+    print()
+
+    print("Entropy comparison:")
+    print(f"Original: \t {ori_mean}")
+    print(f"Primer: \t {primer_mean}")
+    print(f"Generated: \t {gen_mean}")
 
 
 if __name__ == "__main__":
