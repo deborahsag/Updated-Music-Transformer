@@ -10,14 +10,13 @@ import pretty_midi
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-midi_dir", type=str, help="Folder of midi files to be evaluated.")
+    parser.add_argument("-midi_root", type=str, help="Folder of midi files to be evaluated.")
 
     args = parser.parse_args()
 
-    directory = args.midi_dir
+    directory = args.midi_root
 
     original = {}
-    primer = {}
     generated = {}
 
     print("Pitch Class Histogram Entropy")
@@ -37,13 +36,10 @@ def main():
                 if midi_name.startswith("original"):
                     original[midi_name] = e
 
-                if midi_name.startswith("primer"):
-                    primer[midi_name] = e
-
                 if midi_name.startswith("rand"):
                     generated[midi_name] = e
 
-    print("-----Original files-----")
+    print("-----Original pieces-----")
     for name, ent in sorted(original.items()):
         print(f"{name} \t entropy: {ent}")
 
@@ -52,16 +48,7 @@ def main():
     print(f"Mean entropy: {ori_mean}")
     print()
 
-    print("-----Primer files-----")
-    for name, ent in sorted(primer.items()):
-        print(f"{name} \t entropy: {ent}")
-
-    primer_ent = np.array(list(primer.values()))
-    primer_mean = np.mean(primer_ent)
-    print(f"Mean entropy: {primer_mean}")
-    print()
-
-    print("-----Generated files-----")
+    print("-----Generated pieces-----")
     for name, ent in sorted(generated.items()):
         print(f"{name} \t entropy: {ent}")
 
@@ -72,7 +59,6 @@ def main():
 
     print("-----Mean entropy comparison-----")
     print(f"Original: \t {ori_mean}")
-    print(f"Primer: \t {primer_mean}")
     print(f"Generated: \t {gen_mean}")
 
 
