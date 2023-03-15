@@ -43,7 +43,7 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     # Grabbing dataset if needed
-    _, _, dataset = create_epiano_datasets(args.midi_root, args.num_prime, random_seq=False, pmp=args.pmp)
+    _, _, dataset = create_epiano_datasets(args.midi_root, args.target_seq_length, random_seq=False, pmp=args.pmp)
     
     if(args.primer_file is not None):
         f = [args.primer_file]
@@ -73,11 +73,11 @@ def main():
 
         model.load_state_dict(torch.load(args.model_weights))
 
-        f_path = os.path.join(args.output_dir, "primer.mid")
+        f_path = os.path.join(args.output_dir, f"primer-{idx}.mid")
         decode_midi(primer[:args.num_prime].tolist(), f_path)
 
         for i in range(n_samples):
-            print(f"Generating song {i}")
+            print(f"Generating piece {i}")
             # GENERATION
             model.eval()
             with torch.set_grad_enabled(False):
