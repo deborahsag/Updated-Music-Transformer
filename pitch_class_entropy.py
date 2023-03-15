@@ -20,6 +20,10 @@ def main():
     primer = {}
     generated = {}
 
+    print("Pitch Class Histogram Entropy")
+    print(f"MIDI directory: {directory}")
+    print()
+
     for root, dirs, files in os.walk(directory):
         for midi_name in files:
             midi_path = os.path.join(root, midi_name)
@@ -28,7 +32,7 @@ def main():
             if ext == ".mid":
                 midi_data = pretty_midi.PrettyMIDI(midi_path)
                 hist = midi_data.get_pitch_class_histogram()
-                e = entropy(hist)
+                e = entropy(hist, base=2)
 
                 if midi_name.startswith("original"):
                     original[midi_name] = e
@@ -39,31 +43,34 @@ def main():
                 if midi_name.startswith("rand"):
                     generated[midi_name] = e
 
-    for name, ent in original.items():
+    print("-----Original files-----")
+    for name, ent in sorted(original.items()):
         print(f"{name} \t entropy: {ent}")
 
     ori_ent = np.array(list(original.values()))
     ori_mean = np.mean(ori_ent)
-    print(f"Mean of the entropies of the original samples: {ori_mean}")
+    print(f"Mean entropy: {ori_mean}")
     print()
 
-    for name, ent in primer.items():
+    print("-----Primer files-----")
+    for name, ent in sorted(primer.items()):
         print(f"{name} \t entropy: {ent}")
 
     primer_ent = np.array(list(primer.values()))
     primer_mean = np.mean(primer_ent)
-    print(f"Mean of the entropies of the primer files: {primer_mean}")
+    print(f"Mean entropy: {primer_mean}")
     print()
 
-    for name, ent in generated.items():
+    print("-----Generated files-----")
+    for name, ent in sorted(generated.items()):
         print(f"{name} \t entropy: {ent}")
 
     gen_ent = np.array(list(generated.values()))
     gen_mean = np.mean(gen_ent)
-    print(f"Mean of the entropies of the generated samples: {gen_mean}")
+    print(f"Mean entropy: {gen_mean}")
     print()
 
-    print("Entropy comparison:")
+    print("-----Mean entropy comparison-----")
     print(f"Original: \t {ori_mean}")
     print(f"Primer: \t {primer_mean}")
     print(f"Generated: \t {gen_mean}")
