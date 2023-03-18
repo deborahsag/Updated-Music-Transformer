@@ -85,13 +85,13 @@ def main():
                     print("BEAM:", args.beam)
                     beam_seq = model.generate(primer[:args.num_prime], args.target_seq_length, beam=args.beam, pmp=pmp if args.pmp else None)
 
-                    f_path = os.path.join(args.output_dir, f"beam-{i}.mid")
+                    f_path = os.path.join(args.output_dir, f"beam-{idx}-{i}.mid")
                     decode_midi(beam_seq[0].tolist(), f_path)
                 else:
                     print("RAND DIST")
                     rand_seq = model.generate(primer[:args.num_prime], args.target_seq_length, beam=0, pmp=pmp if args.pmp else None)
 
-                    f_path = os.path.join(args.output_dir, f"rand-{i}.mid")
+                    f_path = os.path.join(args.output_dir, f"rand-{idx}-{i}.mid")
                     decode_midi(rand_seq[0].tolist(), f_path)
 
             print()
