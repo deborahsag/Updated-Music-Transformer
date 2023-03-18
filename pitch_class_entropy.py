@@ -57,7 +57,7 @@ def main():
                 if midi_name.startswith("original"):
                     original[midi_name] = ent
 
-                if midi_name.startswith("rand"):
+                if midi_name.startswith("rand") or midi_name.startswith("beam"):
                     generated[midi_name] = ent
 
     print("-----Original pieces-----")
