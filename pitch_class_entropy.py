@@ -7,6 +7,28 @@ from scipy.stats import bootstrap, entropy
 import pretty_midi
 
 
+def print_piece_entropy(pieces):
+    # pieces: dictionary type
+    for name, ent in sorted(pieces.items()):
+        print(f"{name}\tentropy: {ent}")
+    return
+
+
+def compute_mean_entropy(pieces):
+    # pieces: dictionary type
+    entropies = np.array(list(pieces.values()))
+    return np.mean(entropies)
+
+
+def compute_confidence_interval(pieces, statistic=np.mean, n_resamples=9999, confidence_level=0.95, method='BCa'):
+    # pieces: dictionary type
+    # bootstrap confidence interval
+    entropies = list(pieces.values())
+    data = (entropies,)
+    res = bootstrap(data, statistic=statistic, n_resamples=n_resamples, confidence_level=confidence_level, method=method)
+    return res.confidence_interval
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-midi_root", type=str, help="Folder of midi files to be evaluated.")
@@ -40,45 +62,39 @@ def main():
 
     print("-----Original pieces-----")
     if args.print_each:
-        for name, ent in sorted(original.items()):
-            print(f"{name}\tentropy: {ent}")
+        print_piece_entropy(original)
 
     # compute mean entropy
-    ori_ent = np.array(list(original.values()))
-    ori_ent_mean = np.mean(ori_ent)
-    print(f"Mean entropy:\t{ori_ent_mean}")
+    ori_mean = compute_mean_entropy(original)
+    print(f"Mean entropy:\t{ori_mean}")
 
     # bootstrap confidence interval
-    if len(ori_ent) > 1:
-        data = (ori_ent,)
-        ori_res = bootstrap(data, np.mean, n_resamples=args.n_resamples, confidence_level=args.confidence_level, method='BCa')
-        print(f"Mean entropy confidence interval:\t{ori_res.confidence_interval}")
+    if len(original) > 1:
+        ori_interval = compute_confidence_interval(original, n_resamples=args.n_resamples, confidence_level=args.confidence_level)
+        print(f"Mean entropy confidence interval:\t{ori_interval}")
 
     print()
 
     print("-----Generated pieces-----")
     if args.print_each:
-        for name, ent in sorted(generated.items()):
-            print(f"{name}\tentropy: {ent}")
+        print_piece_entropy(generated)
 
     # compute mean entropy
-    gen_ent = np.array(list(generated.values()))
-    gen_ent_mean = np.mean(gen_ent)
-    print(f"Mean entropy:\t{gen_ent_mean}")
+    gen_mean = compute_mean_entropy(generated)
+    print(f"Mean entropy:\t{gen_mean}")
 
     # bootstrap confidence interval
-    data = (gen_ent,)
-    gen_res = bootstrap(data, np.mean, n_resamples=99, confidence_level=0.95, method='BCa')
-    print(f"Mean entropy confidence interval:\t{gen_res.confidence_interval}")
+    gen_interval = compute_confidence_interval(generated, n_resamples=args.n_resamples, confidence_level=args.confidence_level)
+    print(f"Mean entropy confidence interval:\t{gen_interval}")
 
     print()
 
     print("-----Mean entropy comparison-----")
-    if len(ori_ent) > 1:
-        print(f"Original: \t {ori_ent_mean} \t {ori_res.confidence_interval}")
+    if len(original) > 1:
+        print(f"Original: \t {ori_mean} \t {ori_interval}")
     else:
-        print(f"Original: \t {ori_ent_mean}")
-    print(f"Generated: \t {gen_ent_mean} \t {gen_res.confidence_interval}")
+        print(f"Original: \t {ori_mean}")
+    print(f"Generated: \t {gen_mean} \t {gen_interval}")
 
 
 if __name__ == "__main__":
