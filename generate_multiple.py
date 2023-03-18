@@ -77,7 +77,7 @@ def main():
         decode_midi(primer[:args.num_prime].tolist(), f_path)
 
         for i in range(n_samples):
-            print(f"Generating piece {i}")
+            print(f"Generating piece {idx}-{i}")
             # GENERATION
             model.eval()
             with torch.set_grad_enabled(False):
