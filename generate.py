@@ -92,13 +92,13 @@ def main():
     with torch.set_grad_enabled(False):
         if(args.beam > 0):
             print("BEAM:", args.beam)
-            beam_seq = model.generate(primer[:args.num_prime], args.max_sequence, beam=args.beam, pmp=pmp if args.pmp else None)
+            beam_seq, _ = model.generate(primer[:args.num_prime], args.max_sequence, beam=args.beam, pmp=pmp if args.pmp else None)
 
             f_path = os.path.join(args.output_dir, f"beam-{savepath}.mid")
             decode_midi(beam_seq[0].cpu().numpy(), file_path=f_path)
         else:
             print("RAND DIST")
-            rand_seq = model.generate(primer[:args.num_prime], args.max_sequence, beam=0, pmp=pmp if args.pmp else None)
+            rand_seq, _ = model.generate(primer[:args.num_prime], args.max_sequence, beam=0, pmp=pmp if args.pmp else None)
 
             f_path = os.path.join(args.output_dir, f"rand-{savepath}.mid")
             decode_midi(rand_seq[0].cpu().numpy(), file_path=f_path)

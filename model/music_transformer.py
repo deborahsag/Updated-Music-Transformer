@@ -1,8 +1,8 @@
-import numpy
-
 import torch
 import torch.nn as nn
 from torch.nn.modules.normalization import LayerNorm
+
+import numpy as np
 import random
 
 from utilities.constants import *
@@ -87,7 +87,6 @@ class MusicTransformer(nn.Module):
         A prediction at one index is the "next" prediction given all information seen previously.
         ----------
         """
-
         if(mask is True):
             mask = self.transformer.generate_square_subsequent_mask(x.shape[1]).to(get_device())
         else:
@@ -110,12 +109,10 @@ class MusicTransformer(nn.Module):
 
         # Back to (batch_size, max_seq, d_model)
         x_out = x_out.permute(1,0,2)
-
         y = self.Wout(x_out)
-        #y = self.softmax(y) # Why was this commented?
+        # y = self.softmax(y)
 
         del mask
-
         # They are trained to predict the next note in sequence (we don't need the last one)
         return y
 
@@ -143,15 +140,13 @@ class MusicTransformer(nn.Module):
 
         # print("primer:",primer)
         # print(gen_seq)
-        total_probs = numpy.zeros(388) ### 388 token probs
+        total_probs = np.zeros(388)  # 388 tokens
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
-            #print(f"cur_i: {cur_i}, gen_seq[..., :cur_i]: {gen_seq[..., :cur_i].shape}, pmp: {pmp.shape} pmp[..., :cur_i]: {pmp[..., :cur_i].shape}")
             y = self.softmax(self.forward(gen_seq[..., :cur_i], pmp[..., :cur_i] if pmp is not None else None))[..., :TOKEN_END]
             token_probs = y[:, cur_i-1, :]
-            token_probs = token_probs.cpu() # to allow numpy.vstack
-            total_probs = numpy.vstack((total_probs, token_probs)) ### append token probs to matrix
+            total_probs = np.vstack((total_probs, token_probs[0].detach()))   # append token probs to matrix
 
             if(beam == 0):
                 beam_ran = 2.0
@@ -162,8 +157,8 @@ class MusicTransformer(nn.Module):
                 token_probs = token_probs.flatten()
                 top_res, top_i = torch.topk(token_probs, beam)
 
-                beam_rows = top_i // VOCAB_SIZE
-                beam_cols = top_i % VOCAB_SIZE
+                beam_rows = top_i // (VOCAB_SIZE)
+                beam_cols = top_i % (VOCAB_SIZE)
 
                 gen_seq = gen_seq[beam_rows, :]
                 gen_seq[..., cur_i] = beam_cols
@@ -184,9 +179,7 @@ class MusicTransformer(nn.Module):
             if(cur_i % 50 == 0):
                 print(cur_i, "/", target_seq_length)
 
-        numpy.savetxt('total_probs.csv', total_probs, delimiter=',') ### save total_probs in a csv file in root directory
-
-        return gen_seq[:, :cur_i]
+        return gen_seq[:, :cur_i], total_probs
 
 # Used as a dummy to nn.Transformer
 # DummyDecoder
