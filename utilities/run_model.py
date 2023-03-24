@@ -9,7 +9,7 @@ from dataset.e_piano import compute_epiano_accuracy
 
 
 # train_epoch
-def train_epoch(cur_epoch, model, dataloader, loss, opt, lr_scheduler=None, print_modulus=100):
+def train_epoch(cur_epoch, model, dataloader, loss, opt, lr_scheduler=None, print_modulus=1):
     """
     ----------
     Author: Damon Gwinn
@@ -25,14 +25,14 @@ def train_epoch(cur_epoch, model, dataloader, loss, opt, lr_scheduler=None, prin
 
         opt.zero_grad()
 
-        x   = batch[0].long().to(get_device())
-        tgt = batch[1].long().to(get_device())
-        pmp = batch[2].to(get_device())
-        
-        y = model(x, pmp)
+        x   = batch[0].to(get_device())
+        tgt = batch[1].to(get_device())
+
+        y = model(x)
+
         y   = y.reshape(y.shape[0] * y.shape[1], -1)
-        
         tgt = tgt.flatten()
+
         out = loss.forward(y, tgt)
 
         out.backward()
@@ -57,7 +57,7 @@ def train_epoch(cur_epoch, model, dataloader, loss, opt, lr_scheduler=None, prin
     return
 
 # eval_model
-def eval_model(model, dataloader, loss):
+def eval_model(model, dataloader, loss, new_notation):
     """
     ----------
     Author: Damon Gwinn
@@ -65,6 +65,7 @@ def eval_model(model, dataloader, loss):
     Evaluates the model and prints the average loss and accuracy
     ----------
     """
+
     model.eval()
 
     avg_acc     = -1
@@ -74,17 +75,21 @@ def eval_model(model, dataloader, loss):
         sum_loss   = 0.0
         sum_acc    = 0.0
         for batch in dataloader:
-            x   = batch[0].long().to(get_device())
-            tgt = batch[1].long().to(get_device())
-            pmp = batch[2].to(get_device())
+            x   = batch[0].to(get_device())
+            tgt = batch[1].to(get_device())
 
-            y = model(x, pmp)
-            sum_acc += float(compute_epiano_accuracy(y, tgt))
+            y = model(x)
+
+            sum_acc += float(compute_epiano_accuracy(y, tgt, new_notation))
+
             y   = y.reshape(y.shape[0] * y.shape[1], -1)
             tgt = tgt.flatten()
+
             out = loss.forward(y, tgt)
+
             sum_loss += float(out)
 
         avg_loss    = sum_loss / n_test
         avg_acc     = sum_acc / n_test
+
     return avg_loss, avg_acc

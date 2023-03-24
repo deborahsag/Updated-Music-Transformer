@@ -23,7 +23,7 @@ def main():
 
     args = parse_eval_args()
     print_eval_args(args)
-
+    
     if args.new_notation:
         TOKEN_PAD = TOKEN_PAD_NEW_NOTATION
 

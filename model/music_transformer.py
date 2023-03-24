@@ -135,7 +135,7 @@ class MusicTransformer(nn.Module):
         num_primer = len(primer)
         gen_seq[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
 
-        total_probs = np.zeros(388)  # 388 tokens
+        total_probs = np.zeros(388)  # Reminder: get correct number of tokens
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
