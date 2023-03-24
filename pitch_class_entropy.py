@@ -39,6 +39,8 @@ def main():
 
     print("Pitch Class Histogram Entropy")
     print(f"MIDI directory: {args.midi_root}")
+    print(f"n_resamples: {args.n_resamples}")
+    print(f"confidence_level: {args.confidence_level}")
     print()
 
     # get entropy value for each piece in directory

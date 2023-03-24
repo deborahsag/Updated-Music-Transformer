@@ -1,25 +1,16 @@
-import torch
-import torch.nn as nn
 import os
 import random
-import pretty_midi
-import pickle
 
-from third_party.midi_processor.processor import decode_midi, encode_midi
+from third_party.midi_processor.processor import decode_midi
 
-from statistics import mean
 from utilities.argument_funcs import parse_generate_args, print_generate_args
 from model.music_transformer import MusicTransformer
-from dataset.e_piano import create_epiano_datasets, compute_epiano_accuracy, process_midi
-from torch.utils.data import DataLoader
-from torch.optim import Adam
+from dataset.e_piano import create_epiano_datasets
 
 from utilities.constants import *
 from utilities.device import get_device, use_cuda
 
 from structureness_indicators import structureness_indicators
-
-INDICES = []
 
 
 # main
@@ -32,10 +23,10 @@ def main():
     ----------
     """
 
-    args = parse_generate_args()
-    print_generate_args(args)
+    args = parse_generate_args(generate_multiple=True)
+    print_generate_args(args, generate_multiple=True)
 
-    if(args.force_cpu):
+    if (args.force_cpu):
         use_cuda(False)
         print("WARNING: Forced CPU usage, expect model to perform slower")
         print("")
@@ -43,45 +34,38 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     # Grabbing dataset if needed
-    _, _, dataset = create_epiano_datasets(args.midi_root, args.target_seq_length, random_seq=False, pmp=args.pmp)
-    
-    if(args.primer_file is not None):
-        f = [args.primer_file]
+    _, _, dataset = create_epiano_datasets(args.midi_root, args.target_seq_length, args.new_notation, random_seq=False)
+
+    # Can be None, an integer index to dataset, or a file path
+    if (args.primer_file is None):
+        f = random.sample(range(len(dataset)), args.num_primer_files)
     else:
-      n_primers = args.num_primer_files
-      f = random.sample(range(len(dataset)), n_primers)
+        f = [args.primer_file]
 
-    n_samples = args.num_samples
-
-    for j in range(n_primers):
+    for j in range(args.num_primer_files):
         idx = int(f[j])
-        primer, _, _ = dataset[idx]
-        primer = primer.int().to(get_device())
+        primer, _ = dataset[idx]
+        primer = primer.to(get_device())
 
         print("Using primer index:", idx, "(", dataset.data_files[idx], ")")
         decode_midi(primer.tolist(), f"{args.output_dir}/original-{idx}.mid")
 
-        dir_split = dataset.data_files[idx].rfind("/") + 1
-        filepath, filename = dataset.data_files[idx][:dir_split], dataset.data_files[idx][dir_split:-7]
-        pmp = torch.FloatTensor(pickle.load(open(f"{filepath}Pmp-{filename}-1.pickle", "rb"))).to(get_device()) if args.pmp else None
-        if pmp is not None and pmp.shape[0] < args.target_seq_length:
-            pmp = torch.cat((pmp, torch.zeros(args.target_seq_length - pmp.shape[0]).to(get_device())))
-
-        model = MusicTransformer(n_layers=args.n_layers, num_heads=args.num_heads,
-                    d_model=args.d_model, dim_feedforward=args.dim_feedforward,
-                    max_sequence=args.max_sequence, rpr=args.rpr, pmp=args.pmp).to(get_device())
+        model = MusicTransformer(new_notation=args.new_notation, n_layers=args.n_layers, num_heads=args.num_heads,
+                                 d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                                 max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
         model.load_state_dict(torch.load(args.model_weights))
 
+        # Saving primer first
         f_path = os.path.join(args.output_dir, f"primer-{idx}.mid")
-        decode_midi(primer[:args.num_prime].tolist(), f_path)
+        decode_midi(primer[:args.num_prime].tolist(), file_path=f_path)
 
-        for i in range(n_samples):
+        # GENERATION
+        for i in range(args.num_samples):
             print(f"Generating piece {idx}-{i}")
-            # GENERATION
             model.eval()
             with torch.set_grad_enabled(False):
-                if(args.beam > 0):
+                if (args.beam > 0):
                     print("BEAM:", args.beam)
                     beam_seq, _ = model.generate(primer[:args.num_prime], args.target_seq_length, beam=args.beam, pmp=pmp if args.pmp else None)
 
@@ -96,8 +80,8 @@ def main():
 
             print()
 
-        if args.struct:
-            structureness_indicators(args.output_dir)
+        # if args.struct:
+        #     structureness_indicators(args.output_dir)
 
 if __name__ == "__main__":
     main()

@@ -30,24 +30,24 @@ class MusicTransformer(nn.Module):
     ----------
     """
 
-    def __init__(self, n_layers=6, num_heads=8, d_model=512, dim_feedforward=1024,
-                 dropout=0.1, max_sequence=2048, rpr=False, pmp=False):
+    def __init__(self, new_notation, n_layers=6, num_heads=8, d_model=512, dim_feedforward=1024,
+                 dropout=0.1, max_sequence=2048, rpr=False):
         super(MusicTransformer, self).__init__()
 
-        self.dummy      = DummyDecoder()
-        self.nlayers    = n_layers
-        self.nhead      = num_heads
-        self.d_model    = d_model
-        self.d_ff       = dim_feedforward
-        self.dropout    = dropout
-        self.max_seq    = max_sequence
-        self.rpr        = rpr
-        self.pmp        = pmp
-        self.pmp_factor = 1
+        self.dummy        = DummyDecoder()
+        self.nlayers      = n_layers
+        self.nhead        = num_heads
+        self.d_model      = d_model
+        self.d_ff         = dim_feedforward
+        self.dropout      = dropout
+        self.max_seq      = max_sequence
+        self.rpr          = rpr
+        self.new_notation = new_notation
 
+        embedding_dim = VOCAB_SIZE_NEW_NOTATION if self.new_notation else VOCAB_SIZE
 
         # Input embedding
-        self.embedding = nn.Embedding(VOCAB_SIZE, self.d_model-self.pmp_factor if self.pmp else self.d_model)
+        self.embedding = nn.Embedding(embedding_dim, self.d_model)
 
         # Positional encoding
         self.positional_encoding = PositionalEncoding(self.d_model, self.dropout, self.max_seq)
@@ -73,11 +73,11 @@ class MusicTransformer(nn.Module):
             )
 
         # Final output is a softmaxed linear layer
-        self.Wout       = nn.Linear(self.d_model, VOCAB_SIZE)
+        self.Wout       = nn.Linear(self.d_model, embedding_dim)
         self.softmax    = nn.Softmax(dim=-1)
 
     # forward
-    def forward(self, x, pmp, mask=True):
+    def forward(self, x, mask=True):
         """
         ----------
         Author: Damon Gwinn
@@ -93,11 +93,6 @@ class MusicTransformer(nn.Module):
             mask = None
 
         x = self.embedding(x)
-
-        if self.pmp:
-            pmp = pmp[:, :, None] if pmp.dim() == 2 else pmp[None, :, None]
-            x = torch.cat((x, pmp.expand(-1, -1, self.pmp_factor)), dim=2)
-
         # Input shape is (max_seq, batch_size, d_model)
         x = x.permute(1,0,2)
 
@@ -117,7 +112,7 @@ class MusicTransformer(nn.Module):
         return y
 
     # generate
-    def generate(self, primer=None, target_seq_length=1024, beam=0, beam_chance=1.0, pmp=None):
+    def generate(self, primer=None, target_seq_length=1024, beam=0, beam_chance=1.0):
         """
         ----------
         Author: Damon Gwinn
@@ -126,7 +121,10 @@ class MusicTransformer(nn.Module):
         the softmax probabilities (recommended) or by using a beam search.
         ----------
         """
-        #print(f"Beginning pmp shape: {pmp.shape}--")
+        if self.new_notation:
+            TOKEN_END = TOKEN_END_NEW_NOTATION
+            TOKEN_PAD = TOKEN_PAD_NEW_NOTATION
+            VOCAB_SIZE = VOCAB_SIZE_NEW_NOTATION
 
         assert (not self.training), "Cannot generate while in training mode"
 
@@ -137,14 +135,11 @@ class MusicTransformer(nn.Module):
         num_primer = len(primer)
         gen_seq[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
 
-
-        # print("primer:",primer)
-        # print(gen_seq)
         total_probs = np.zeros(388)  # 388 tokens
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
-            y = self.softmax(self.forward(gen_seq[..., :cur_i], pmp[..., :cur_i] if pmp is not None else None))[..., :TOKEN_END]
+            y = self.softmax(self.forward(gen_seq[..., :cur_i]))[..., :TOKEN_END]
             token_probs = y[:, cur_i-1, :]
             total_probs = np.vstack((total_probs, token_probs[0].detach()))   # append token probs to matrix
 
