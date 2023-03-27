@@ -75,12 +75,13 @@ def main():
             print("Wrong prediction.")
             score.append(0)
 
-        print("------")
+        print("---------------")
 
     # Compute final score
     final_score = np.mean(np.array(score))
 
     print(f"Final MIREX-like Continuation Prediction Challenge Score: {final_score}")
+    print("")
 
     return
 

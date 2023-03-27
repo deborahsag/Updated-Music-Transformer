@@ -10,8 +10,6 @@ from dataset.e_piano import create_epiano_datasets
 from utilities.constants import *
 from utilities.device import get_device, use_cuda
 
-from structureness_indicators import structureness_indicators
-
 
 # main
 def main():
@@ -80,8 +78,6 @@ def main():
 
             print()
 
-        # if args.struct:
-        #     structureness_indicators(args.output_dir)
 
 if __name__ == "__main__":
     main()
