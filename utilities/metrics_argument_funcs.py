@@ -13,11 +13,11 @@ def parse_mirex_args():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-midi_root", type=str, default="dataset/e_piano_maestro", help="Directory containing test MIDI files.")
-    parser.add_argument("-model_weights", type=str, default="trained_models/maestro.pickle", help="Pickled model weights file saved with torch.save and model.state_dict()")  # Change default
-    parser.add_argument("-target_seq_length", type=int, default=300, help="Target length you'd like the midi to be")                                                            # Change default
-    parser.add_argument("-prompt_length", type=int, default=256, help="Number of tokens of the prompt sequence.")
-    parser.add_argument("-num_continuations", type=int, default=4, help="Number of continuations to test the model's continuation prediction (including real continuation.")
+    parser.add_argument("-midi_root", type=str, default="dataset/data_maestro", help="Directory containing test MIDI files.")
+    parser.add_argument("-model_weights", type=str, default="maestro_models/new_notation.pickle", help="Pickled model weights file saved with torch.save and model.state_dict()")  # Change default
+    parser.add_argument("-prompt_length", type=int, default=128, help="Length of prompt sequence in tokens.")
+    parser.add_argument("-continuation_length", type=int, default=128, help="Length of continuation sequence in tokens.")                                                            # Change default
+    parser.add_argument("-num_continuations", type=int, default=4, help="Number of continuations to test the model's continuation prediction (including real continuation).")
     parser.add_argument("-num_tests", type=int, default=1, help="Number of prediction tests to be run.")
     parser.add_argument("-beam", type=int, default=0, help="Beam search k. 0 for random probability sample and 1 for greedy")
 
@@ -29,6 +29,7 @@ def parse_mirex_args():
     parser.add_argument("--rpr", action="store_true", default=True, help="Use a modified Transformer for Relative Position Representations")
 
     parser.add_argument("--force_cpu", action="store_true", help="Forces model to run on a cpu even when gpu is available")     # Change default for training on GPU
+    parser.add_argument("--new_notation", action="store_true", default=True, help="Uses new notation based on note duration")
 
     return parser.parse_args()
 
@@ -46,8 +47,8 @@ def print_mirex_args(args):
     print("Generate arguments")
     print("midi_root:", args.midi_root)
     print("model_weights:", args.model_weights)
-    print("target_seq_length:", args.target_seq_length)
     print("prompt_length:", args.prompt_length)
+    print("continuation_length:", args.continuation_length)
     print("num_continuations:", args.num_continuations)
     print("num_tests:", args.num_tests)
     print("beam:", args.beam)
@@ -61,5 +62,6 @@ def print_mirex_args(args):
     print("rpr:", args.rpr)
     print("")
     print("force_cpu:", args.force_cpu)
+    print("new_notation:", args.new_notation)
     print(SEPERATOR)
     print("")
