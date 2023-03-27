@@ -53,7 +53,7 @@ def main():
 
     print("Avg loss:", avg_loss)
     print("Avg acc:", avg_acc)
-    print(SEPERATOR)
+    print(SEPARATOR)
     print("")
 
 

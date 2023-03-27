@@ -43,7 +43,7 @@ def print_mirex_args(args):
     ----------
     """
 
-    print(SEPERATOR)
+    print(SEPARATOR)
     print("Generate arguments")
     print("midi_root:", args.midi_root)
     print("model_weights:", args.model_weights)
@@ -63,5 +63,5 @@ def print_mirex_args(args):
     print("")
     print("force_cpu:", args.force_cpu)
     print("new_notation:", args.new_notation)
-    print(SEPERATOR)
+    print(SEPARATOR)
     print("")

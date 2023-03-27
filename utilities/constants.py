@@ -2,7 +2,7 @@ import torch
 
 from third_party.midi_processor.processor import RANGE_NOTE_ON, RANGE_NOTE_OFF, RANGE_VEL, RANGE_TIME_SHIFT, RANGE_DURATION
 
-SEPERATOR               = "========================="
+SEPARATOR               = "========================="
 
 # Taken from the paper
 ADAM_BETA_1             = 0.9
