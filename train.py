@@ -132,18 +132,18 @@ def main():
     for epoch in range(start_epoch, args.epochs):
         # Baseline has no training and acts as a base loss and accuracy (epoch 0 in a sense)
         if(epoch > BASELINE_EPOCH):
-            print(SEPERATOR)
+            print(SEPARATOR)
             print("NEW EPOCH:", epoch+1)
-            print(SEPERATOR)
+            print(SEPARATOR)
             print("")
 
             # Train
             train_epoch(epoch+1, model, train_loader, train_loss_func, opt, lr_scheduler, args.print_modulus)
 
-            print(SEPERATOR)
+            print(SEPARATOR)
             print("Evaluating:")
         else:
-            print(SEPERATOR)
+            print(SEPARATOR)
             print("Baseline model evaluation (Epoch 0):")
 
         # Eval
@@ -158,7 +158,7 @@ def main():
         print("Avg train acc:", train_acc)
         print("Avg eval loss:", eval_loss)
         print("Avg eval acc:", eval_acc)
-        print(SEPERATOR)
+        print(SEPARATOR)
         print("")
 
         new_best = False
