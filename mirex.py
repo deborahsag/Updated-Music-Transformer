@@ -2,10 +2,9 @@ import numpy as np
 import random
 
 from model.music_transformer import MusicTransformer
-from dataset.e_piano import create_epiano_datasets
+from dataset.e_piano import EPianoDataset
 
 from utilities.metrics_argument_funcs import parse_mirex_args, print_mirex_args
-# Reminder: correct default arguments in metrics_argument_funcs.py after tests are done
 
 from utilities.constants import *
 from utilities.device import get_device
@@ -42,7 +41,7 @@ def main():
 
     # Grab test dataset
     target_seq_length = args.prompt_length + args.continuation_length
-    _, _, dataset = create_epiano_datasets(args.midi_root, target_seq_length, args.new_notation, random_seq=False)
+    dataset = EPianoDataset(args.midi_root, args.new_notation, target_seq_length, random_seq=True)
 
     score = []
     for i in range(args.num_tests):
