@@ -35,9 +35,9 @@ def main():
                              d_model=args.d_model, dim_feedforward=args.dim_feedforward,
                              max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
-    model.load_state_dict(torch.load(args.model_weights, map_location=torch.device('cpu')))     # Change map_location for training on GPU
+    model.load_state_dict(torch.load(args.model_weights))
 
-    model.training = False  # Find out why it presumes the model is being trained
+    model.training = False
 
     # Grab test dataset
     target_seq_length = args.prompt_length + args.continuation_length
@@ -57,8 +57,6 @@ def main():
 
         # Generate token probabilities from prompt
         _, gen_probs = model.generate(prompt, target_seq_length, beam=args.beam)
-        # For illustration purposes, save gen_probs in a csv file
-        np.savetxt('gen_probs.csv', gen_probs, delimiter=',')  # Save to root directory
 
         # For each continuation, compute the probability of it being chosen
         probs = []
