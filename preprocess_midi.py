@@ -63,7 +63,7 @@ def prep_maestro_midi(maestro_root, output_dir):
         with open(o_file, "wb") as o_stream:
             pickle.dump(prepped, o_stream)
 
-        prepped_new_notation = midi_processor.encode_midi(mid)
+        prepped_new_notation = midi_processor.encode_midi_modified(mid)
         with open(o_file + "-duration", "wb") as o_stream:
             pickle.dump(prepped_new_notation, o_stream)
 
@@ -128,7 +128,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
         with open(o_file, "wb") as o_stream:
             pickle.dump(prepped, o_stream)
 
-        prepped_new_notation = midi_processor.encode_midi(mid)
+        prepped_new_notation = midi_processor.encode_midi_modified(mid)
         with open(o_file + "-duration", "wb") as o_stream:
             pickle.dump(prepped_new_notation, o_stream)
 

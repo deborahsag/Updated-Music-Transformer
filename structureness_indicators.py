@@ -71,6 +71,7 @@ def SIs_from_mid(mid):
     long  = compute_structure_indicator(fit_path, 15)
     return (short, mid, long)
 
+
 def structureness_indicators(plots_dir, max_workers=10, chunksize=1):
     midis = glob(f"{plots_dir}/**/rand-*.[mid|MID]*", recursive=True)
     

@@ -144,7 +144,7 @@ def print_eval_args(args):
     print("")
 
 # parse_generate_args
-def parse_generate_args(generate_multiple=False):
+def parse_generate_args():
     """
     ----------
     Author: Damon Gwinn
@@ -173,15 +173,16 @@ def parse_generate_args(generate_multiple=False):
     parser.add_argument("-d_model", type=int, default=512, help="Dimension of the model (output dim of embedding layers, etc.)")
 
     parser.add_argument("-dim_feedforward", type=int, default=1024, help="Dimension of the feedforward layer")
-
-    if generate_multiple:
-        parser.add_argument("-num_primer_files", type=int, default=1, help="Number of files to prime the generator with. Indexes are chosen at random.")
-        parser.add_argument("-num_samples", type=int, default=1, help="Number of samples to be generated from one midi file in the dataset")
+    
+    parser.add_argument("-num_primer_files", type=int, default=1, help="Number of files to prime the generator with. Indexes are chosen at random.")
+    parser.add_argument("-num_samples", type=int, default=1, help="Number of samples to be generated from one midi file in the dataset")
+    
+    parser.add_argument("-seed", type=int, default=None, help="Seed for the random primer selector")
 
     return parser.parse_args()
 
 # print_generate_args
-def print_generate_args(args, generate_multiple=False):
+def print_generate_args(args):
     """
     ----------
     Author: Damon Gwinn
@@ -193,13 +194,12 @@ def print_generate_args(args, generate_multiple=False):
     print(SEPARATOR)
     print("midi_root:", args.midi_root)
     print("output_dir:", args.output_dir)
-    if generate_multiple:
-        print("num_primer_files:", args.num_primer_files)
-        print("num_samples:", args.num_samples)
-    else:
-        print("primer_file:", args.primer_file)
+    print("num_primer_files:", args.num_primer_files)
+    print("num_samples:", args.num_samples)
+    print("primer_file:", args.primer_file)
     print("force_cpu:", args.force_cpu)
     print("new_notation:", args.new_notation)
+    print("seed:", args.seed)
     print("")
     print("target_seq_length:", args.target_seq_length)
     print("num_prime:", args.num_prime)
@@ -239,6 +239,5 @@ def write_model_params(args, output_file):
     o_stream.write("d_model: " + str(args.d_model) + "\n")
     o_stream.write("dim_feedforward: " + str(args.dim_feedforward) + "\n")
     o_stream.write("dropout: " + str(args.dropout) + "\n")
-    
 
     o_stream.close()

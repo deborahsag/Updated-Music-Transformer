@@ -19,6 +19,7 @@ class EPianoDataset(Dataset):
     ----------
     Pytorch Dataset for the Maestro e-piano dataset (https://magenta.tensorflow.org/datasets/maestro).
     Recommended to use with Dataloader (https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader)
+
     Uses all files found in the given root directory of pre-processed (preprocess_midi.py)
     Maestro midi files.
     ----------
@@ -107,6 +108,7 @@ def process_midi(raw_mid, max_seq, random_seq, new_notation):
             start = SEQUENCE_START
 
         end = start + full_seq
+
         data = raw_mid[start:end]
 
         x = data[:max_seq]
@@ -152,8 +154,11 @@ def compute_epiano_accuracy(out, tgt, new_notation):
 
     out = out.flatten()
     tgt = tgt.flatten()
-
-    mask = (tgt != TOKEN_PAD_NEW_NOTATION) if new_notation else (tgt != TOKEN_PAD)
+    
+    if new_notation:
+        mask = (tgt != TOKEN_PAD_NEW_NOTATION)
+    else:
+        mask = (tgt != TOKEN_PAD)
 
     out = out[mask]
     tgt = tgt[mask]
