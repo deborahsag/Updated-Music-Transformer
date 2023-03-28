@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 from model.music_transformer import MusicTransformer
-from dataset.e_piano import EPianoDataset
+from dataset.e_piano import create_epiano_datasets
 
 from utilities.metrics_argument_funcs import parse_mirex_args, print_mirex_args
 
@@ -41,7 +41,7 @@ def main():
 
     # Grab test dataset
     target_seq_length = args.prompt_length + args.continuation_length
-    dataset = EPianoDataset(args.midi_root, args.new_notation, target_seq_length, random_seq=True)
+    _, _, dataset = create_epiano_datasets(args.midi_root, target_seq_length, args.new_notation, random_seq=True)
 
     score = []
     for i in range(args.num_tests):
