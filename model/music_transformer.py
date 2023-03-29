@@ -139,7 +139,7 @@ class MusicTransformer(nn.Module):
             else:
                 y = self.softmax(self.forward(gen_seq[..., :cur_i]))[..., :TOKEN_END]
             token_probs = y[:, cur_i-1, :]
-            total_probs = np.vstack((total_probs, token_probs[0].detach()))   # append token probs to matrix
+            total_probs = np.vstack((total_probs, token_probs[0].cpu().detach()))   # append token probs to matrix
 
             if(beam == 0):
                 beam_ran = 2.0
