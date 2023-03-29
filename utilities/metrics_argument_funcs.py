@@ -20,7 +20,7 @@ def parse_mirex_args():
     parser.add_argument("-num_tests", type=int, default=1, help="Number of prediction tests to be run.")
 
     parser.add_argument("-model_weights", type=str, help="Pickled model weights file saved with torch.save and model.state_dict()")  # Change default
-    parser.add_argument("--new_notation", action="store_true", default=True, help="Uses new notation based on note duration")
+    parser.add_argument("--new_notation", action="store_true", help="Uses new notation based on note duration")
     parser.add_argument("-n_layers", type=int, default=6, help="Number of decoder layers to use")
     parser.add_argument("-num_heads", type=int, default=8, help="Number of heads to use for multi-head attention")
     parser.add_argument("-d_model", type=int, default=512, help="Dimension of the model (output dim of embedding layers, etc.)")
