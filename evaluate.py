@@ -23,9 +23,6 @@ def main():
 
     args = parse_eval_args()
     print_eval_args(args)
-    
-    if args.new_notation:
-        TOKEN_PAD = TOKEN_PAD_NEW_NOTATION
 
     if(args.force_cpu):
         use_cuda(False)
@@ -44,7 +41,10 @@ def main():
     model.load_state_dict(torch.load(args.model_weights))
 
     # No smoothed loss
-    loss = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
+    if args.new_notation:
+        loss = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD_NEW_NOTATION)
+    else:
+        loss = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
 
     print("Evaluating:")
     model.eval()
