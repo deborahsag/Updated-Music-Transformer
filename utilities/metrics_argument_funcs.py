@@ -20,6 +20,7 @@ def parse_mirex_args():
     parser.add_argument("-num_continuations", type=int, default=4, help="Number of continuations to test the model's continuation prediction (including real continuation).")
     parser.add_argument("-num_tests", type=int, default=1, help="Number of prediction tests to be run.")
     parser.add_argument("-seed", type=int, default=None, help="Seed for the random prompt and continuations selector")
+    parser.add_argument("--new_notation", action="store_true", help="Uses new notation based on note duration")
 
     parser.add_argument("-n_layers", type=int, default=6, help="Number of decoder layers to use")
     parser.add_argument("-num_heads", type=int, default=8, help="Number of heads to use for multi-head attention")
