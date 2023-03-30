@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import sys
 
 from model.music_transformer import MusicTransformer
 from dataset.e_piano import create_epiano_datasets
@@ -29,6 +30,11 @@ def compute_continuation_prob(gen_probs, continuation):
 def main():
     args = parse_mirex_args()
     print_mirex_args(args)
+
+    # Set seed for the random prompt and continuations selector
+    SEED = args.seed if args.seed is not None else random.randrange(sys.maxsize)
+    print(f"Setting seed to {SEED}")
+    random.seed(SEED)
 
     # Load model
     model = MusicTransformer(new_notation=args.new_notation, n_layers=args.n_layers, num_heads=args.num_heads,
