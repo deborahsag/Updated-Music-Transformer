@@ -5,8 +5,10 @@ import random
 import pretty_midi
 import pickle
 import sys
+from shutil import copyfile
 
-from third_party.midi_processor.processor import encode_midi_original, encode_midi_modified, decode_midi_modified, decode_midi_original
+from third_party.midi_processor.processor import encode_midi_original, encode_midi_modified, decode_midi_modified, \
+    decode_midi_original
 
 from statistics import mean
 from utilities.argument_funcs import parse_generate_args, print_generate_args
@@ -35,11 +37,11 @@ def main():
     args = parse_generate_args()
     print_generate_args(args)
 
-    if(args.force_cpu):
+    if (args.force_cpu):
         use_cuda(False)
         print("WARNING: Forced CPU usage, expect model to perform slower")
         print("")
-    
+
     SEED = args.seed if args.seed is not None else random.randrange(sys.maxsize)
     print(f"Setting seed to {SEED}")
     random.seed(SEED)
@@ -47,9 +49,9 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     # Grabbing dataset if needed
-    _, _, dataset = create_epiano_datasets(args.midi_root, args.target_seq_length, args.new_notation, random_seq=False)
-    
-    if(args.primer_file is not None):
+    _, _, dataset = create_epiano_datasets(args.midi_root, args.num_prime, args.new_notation, random_seq=False)
+
+    if (args.primer_file is not None):
         f = [args.primer_file]
     else:
         f = random.sample(range(len(dataset)), args.num_primer_files)
@@ -60,17 +62,16 @@ def main():
         primer = primer.int().to(get_device())
 
         print("Using primer index:", idx, "(", dataset.data_files[idx], ")")
+        with open(dataset.data_files[idx], "rb") as p:
+            original = pickle.load(p)
         if args.new_notation:
-            decode_midi_modified(primer.tolist(), f"{args.output_dir}/original-{idx}.mid")
+            decode_midi_modified(original, f"{args.output_dir}/original-{idx}.mid")
         else:
-            decode_midi_original(primer.tolist(), f"{args.output_dir}/original-{idx}.mid")
-
-        dir_split = dataset.data_files[idx].rfind("/") + 1
-        filepath, filename = dataset.data_files[idx][:dir_split], dataset.data_files[idx][dir_split:-7]
+            decode_midi_original(original, f"{args.output_dir}/original-{idx}.mid")
 
         model = MusicTransformer(new_notation=args.new_notation, n_layers=args.n_layers, num_heads=args.num_heads,
-                    d_model=args.d_model, dim_feedforward=args.dim_feedforward,
-                    max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
+                                 d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                                 max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
         model.load_state_dict(torch.load(args.model_weights))
 
@@ -85,7 +86,7 @@ def main():
             # GENERATION
             model.eval()
             with torch.set_grad_enabled(False):
-                if(args.beam > 0):
+                if (args.beam > 0):
                     print("BEAM:", args.beam)
                     beam_seq, _ = model.generate(primer[:args.num_prime], args.target_seq_length, beam=args.beam)
 
