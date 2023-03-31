@@ -23,7 +23,7 @@ def compute_continuation_prob(gen_probs, continuation):
     # Get average probability of token sequences
     probs = []
     for i in range(len(continuation)):
-        probs.append(gen_probs[i + 1][continuation[i]])
+        probs.append(gen_probs[i + 1][continuation[i] - 1])
     return np.mean(np.array(probs))
 
 
@@ -41,7 +41,7 @@ def main():
                              d_model=args.d_model, dim_feedforward=args.dim_feedforward,
                              max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
-    model.load_state_dict(torch.load(args.model_weights))
+    model.load_state_dict(torch.load(args.model_weights, map_location=torch.device('cpu')))
 
     model.training = False
 

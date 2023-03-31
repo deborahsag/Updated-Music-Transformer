@@ -205,7 +205,7 @@ def _note_preprocess(susteins, notes):
     return note_stream
 
 
-def encode_midi(file_path):     # encode_midi_modified
+def encode_midi_modified(file_path):
     events = []
     notes = []
     try:
@@ -328,7 +328,7 @@ def encode_midi_original(file_path):
     return [e.to_int() for e in events]
 
 
-def decode_midi(idx_array, file_path=None):     # decode_midi_modified
+def decode_midi_modified(idx_array, file_path=None):
     mid = pretty_midi.PrettyMIDI()
     instrument = pretty_midi.Instrument(1, False, "Modified")
     notes = []
