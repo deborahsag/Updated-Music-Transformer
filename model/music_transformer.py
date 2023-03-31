@@ -130,11 +130,7 @@ class MusicTransformer(nn.Module):
         num_primer = len(primer)
         gen_seq[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
 
-        a = torch.max(gen_seq)
-
-        b = torch.min(gen_seq)
-
-        total_probs = np.zeros(TOKEN_END_NEW_NOTATION if self.new_notation else TOKEN_END)
+        total_probs = np.zeros(TOKEN_PAD_NEW_NOTATION if self.new_notation else TOKEN_PAD)
 
         cur_i = num_primer
         while(cur_i < target_seq_length):
