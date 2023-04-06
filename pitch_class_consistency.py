@@ -61,6 +61,16 @@ def compute_total_variation_distance(histogram_1, histogram_2):
     return 0.5 * np.sum(hist_res)
 
 
+def get_mean_consistency(pieces):
+    """
+    Pieces is dictionary type
+    """
+    consistencies = []
+    for name, cons in pieces.items():
+        consistencies.append(cons)
+    return np.mean(np.array(consistencies))
+
+
 def print_piece_consistency(pieces):
     # pieces: dictionary type
     for name, cons in sorted(pieces.items()):
@@ -88,12 +98,13 @@ def main():
                 for i in range(len(histograms) - 1):    # calculate the distance between histograms pair by pair
                     dist = compute_total_variation_distance(histograms[i], histograms[i+1])
                     distances.append(dist)
+                consistency = np.mean(np.array(distances))
 
                 if midi_name.startswith("original"):
-                    original[midi_name] = distances
+                    original[midi_name] = consistency
 
                 if midi_name.startswith("rand") or midi_name.startswith("beam"):
-                    generated[midi_name] = distances
+                    generated[midi_name] = consistency
 
     if args.print_each:
         print("Original pieces:")
@@ -104,6 +115,12 @@ def main():
         print_piece_consistency(generated)
         print("---------------")
         print("")
+
+    ori_mean = get_mean_consistency(original)
+    print(f"Mean Consistency of Real Pieces: {ori_mean}")
+    gen_mean = get_mean_consistency(generated)
+    print(f"Mean Consistency of Generated Pieces: {gen_mean}")
+    print("")
 
     return
 
