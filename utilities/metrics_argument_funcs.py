@@ -1,6 +1,7 @@
 import argparse
 
-from utilities.constants import *
+
+SEPARATOR = "========================="
 
 
 def parse_pitch_class_entropy_args():
@@ -71,7 +72,7 @@ def print_pitch_class_consistency_args(args):
     """
 
     print(SEPARATOR)
-    print("Overall Pitch Class Histogram Entropy")
+    print("Pitch Class Consistency")
     print(SEPARATOR)
     print(f"-midi_root: {args.midi_root}")
     print(f"-num_partitions: {args.num_partitions}")
