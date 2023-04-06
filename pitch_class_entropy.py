@@ -9,36 +9,45 @@ import pretty_midi
 from utilities.metrics_argument_funcs import parse_pitch_class_entropy_args, print_pitch_class_entropy_args
 
 
-def print_piece_entropy(pieces):
-    # pieces: dictionary type
-    for name, ent in sorted(pieces.items()):
-        print(f"{name}\tentropy: {ent}")
-    return
-
-
 def compute_mean_entropy(pieces):
-    # pieces: dictionary type
+    """
+    Computes mean entropy value among given pieces.
+    Receives dictionary of pieces and its entropy values.
+    Returns float value.
+    """
     entropies = np.array(list(pieces.values()))
     return np.mean(entropies)
 
 
 def compute_confidence_interval(pieces, statistic=np.mean, n_resamples=9999, confidence_level=0.95, method='BCa'):
-    # pieces: dictionary type
-    # bootstrap confidence interval
+    """
+    Computes confidence interval of the mean value using the bootstrap method.
+    Receives a dictionary of pieces and its entropy values.
+    Returns a confidence interval.
+    """
     entropies = list(pieces.values())
     data = (entropies,)
     res = bootstrap(data, statistic=statistic, n_resamples=n_resamples, confidence_level=confidence_level, method=method)
     return res.confidence_interval
 
 
+def print_piece_entropy(pieces):
+    """
+    Receives dictionary of pieces and its entropy values.
+    Prints entropy value of every piece.
+    """
+    for name, ent in sorted(pieces.items()):
+        print(f"{name}\tentropy: {ent}")
+    return
+
+
 def main():
     args = parse_pitch_class_entropy_args()
     print_pitch_class_entropy_args(args)
 
-    # get entropy value for each piece in directory
     original = {}
     generated = {}
-    for root, dirs, files in os.walk(args.midi_root):
+    for root, dirs, files in os.walk(args.midi_root):   # get entropy value for each piece in directory
         for midi_name in files:
             midi_path = os.path.join(root, midi_name)
             ext = os.path.splitext(midi_path)[-1].lower()
@@ -95,7 +104,6 @@ def main():
         print(f"Generated: \t {gen_mean} \t {gen_interval}")
     else:
         print(f"Generated: \t {gen_mean}")
-    print("---------------")
     print("")
 
 

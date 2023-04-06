@@ -7,6 +7,10 @@ from utilities.metrics_argument_funcs import parse_pitch_class_consistency_args,
 
 
 def get_midi_partitions(midi, num_partitions):
+    """
+    Partitions a PrettyMIDI object given the number of partitions. Separation is based in seconds.
+    Returns a list of PrettyMIDI objects.
+    """
     midi_partitions = []
     for i in range(num_partitions):
         midi_partitions.append(pretty_midi.PrettyMIDI())
@@ -20,8 +24,11 @@ def get_midi_partitions(midi, num_partitions):
     return midi_partitions
 
 
-# to be fixed: some notes are left behind.
 def get_instrument_partitions(instrument, num_partitions):
+    """
+    Partitions a PrettyMIDI object given the number of partitions. Separation is based in seconds.
+    Returns a list of Instrument objects.
+    """
     end_time = instrument.get_end_time()
     partition_duration = end_time // num_partitions
     current_limit = partition_duration  # defines end of current partition in seconds
@@ -30,7 +37,7 @@ def get_instrument_partitions(instrument, num_partitions):
     notes = instrument.notes
     n = 0   # run through entire instrument track note for note
 
-    instrument_partitions = []     # list of separate parts of the same track. Length = num_partitions
+    instrument_partitions = []     # list of separate partitions of the same track. Length = num_partitions
     for p in range(num_partitions):
         part = pretty_midi.Instrument(program=program)    # create a new object for new partition
         partition_notes = []
@@ -48,6 +55,10 @@ def get_instrument_partitions(instrument, num_partitions):
 
 
 def get_partitions_histograms(partitions):
+    """
+    Get the pitch class histogram of each PrettyMIDI object in a list.
+    Returns a list of histograms.
+    """
     histograms = []
     for part in partitions:
         histograms.append(part.get_pitch_class_histogram())
@@ -55,6 +66,10 @@ def get_partitions_histograms(partitions):
 
 
 def compute_total_variation_distance(histogram_1, histogram_2):
+    """
+    Compute the Total Variation Distance between two histograms.
+    Returns a float value.
+    """
     hist_1 = np.array(histogram_1)
     hist_2 = np.array(histogram_2)
     hist_res = np.absolute(hist_1 - hist_2)
@@ -63,7 +78,9 @@ def compute_total_variation_distance(histogram_1, histogram_2):
 
 def get_mean_consistency(pieces):
     """
-    Pieces is dictionary type
+    Gets the mean value of consistency among a list of pieces.
+    Receives a dictionary of pieces and its values of consistency.
+    Returns a float value.
     """
     consistencies = []
     for name, cons in pieces.items():
@@ -72,7 +89,10 @@ def get_mean_consistency(pieces):
 
 
 def print_piece_consistency(pieces):
-    # pieces: dictionary type
+    """
+    Receives a dictionary of pieces and its values of consistency.
+    Prints consistency values of every piece.
+    """
     for name, cons in sorted(pieces.items()):
         print(f"{name}\tconsistency: {cons}")
     return
@@ -98,7 +118,7 @@ def main():
                 for i in range(len(histograms) - 1):    # calculate the distance between histograms pair by pair
                     dist = compute_total_variation_distance(histograms[i], histograms[i+1])
                     distances.append(dist)
-                consistency = np.mean(np.array(distances))
+                consistency = np.mean(np.array(distances))  # consistency is given by the mean value of distances within a piece
 
                 if midi_name.startswith("original"):
                     original[midi_name] = consistency
