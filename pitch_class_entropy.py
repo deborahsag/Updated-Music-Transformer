@@ -1,4 +1,3 @@
-import argparse
 import os
 
 import numpy as np
@@ -63,47 +62,30 @@ def main():
                 if midi_name.startswith("rand") or midi_name.startswith("beam"):
                     generated[midi_name] = ent
 
-    # compute mean entropy
-    ori_mean = compute_mean_entropy(original)
-
-    # bootstrap confidence interval
-    if len(original) > 1:
-        ori_interval = compute_confidence_interval(original, n_resamples=args.n_resamples,
-                                                   confidence_level=args.confidence_level)
-
     if args.print_each:
         print("Original pieces:")
         print_piece_entropy(original)
-        print(f"Mean entropy:\t{ori_mean}")
-        print(f"Mean entropy confidence interval:\t{ori_interval}")
+        print("---------------")
+        print("")
+        print("Generated pieces:")
+        print_piece_entropy(generated)
         print("---------------")
         print("")
 
-    # compute mean entropy
-    gen_mean = compute_mean_entropy(generated)
+    ori_mean = compute_mean_entropy(original)
+    print(f"Mean Entropy of Original Pieces: {ori_mean}")
+    if len(original) > 1:
+        ori_interval = compute_confidence_interval(original, n_resamples=args.n_resamples,
+                                                   confidence_level=args.confidence_level)
+        print(ori_interval)
+    print("")
 
-    # bootstrap confidence interval
+    gen_mean = compute_mean_entropy(generated)
+    print(f"Mean Entropy of Generated Pieces: {gen_mean}")
     if len(generated) > 1:
         gen_interval = compute_confidence_interval(generated, n_resamples=args.n_resamples,
                                                    confidence_level=args.confidence_level)
-
-    if args.print_each:
-        print("Generated pieces:")
-        print_piece_entropy(generated)
-        print(f"Mean entropy:\t{gen_mean}")
-        print(f"Mean entropy confidence interval:\t{gen_interval}")
-        print("---------------")
-        print("")
-
-    print("Mean entropy comparison:")
-    if len(original) > 1:
-        print(f"Original: \t {ori_mean} \t {ori_interval}")
-    else:
-        print(f"Original: \t {ori_mean}")
-    if len(generated) > 1:
-        print(f"Generated: \t {gen_mean} \t {gen_interval}")
-    else:
-        print(f"Generated: \t {gen_mean}")
+        print(gen_interval)
     print("")
 
 

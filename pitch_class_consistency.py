@@ -1,5 +1,7 @@
 import os
+
 import numpy as np
+from scipy.stats import bootstrap
 
 import pretty_midi
 
@@ -79,13 +81,25 @@ def compute_total_variation_distance(histogram_1, histogram_2):
 def get_mean_consistency(pieces):
     """
     Gets the mean value of consistency among a list of pieces.
-    Receives a dictionary of pieces and its values of consistency.
+    Receives a dictionary of pieces and its consistency values.
     Returns a float value.
     """
     consistencies = []
     for name, cons in pieces.items():
         consistencies.append(cons)
     return np.mean(np.array(consistencies))
+
+
+def compute_confidence_interval(pieces, statistic=np.mean, n_resamples=9999, confidence_level=0.95, method='BCa'):
+    """
+    Computes confidence interval of the mean value using the bootstrap method.
+    Receives a dictionary of pieces and its consistency values.
+    Returns a confidence interval.
+    """
+    values = list(pieces.values())
+    data = (values,)
+    res = bootstrap(data, statistic=statistic, n_resamples=n_resamples, confidence_level=confidence_level, method=method)
+    return res.confidence_interval
 
 
 def print_piece_consistency(pieces):
@@ -137,9 +151,19 @@ def main():
         print("")
 
     ori_mean = get_mean_consistency(original)
-    print(f"Mean Consistency of Real Pieces: {ori_mean}")
+    print(f"Mean Consistency of Original Pieces: {ori_mean}")
+    if len(original) > 1:
+        ori_interval = compute_confidence_interval(original, n_resamples=args.n_resamples,
+                                                   confidence_level=args.confidence_level)
+        print(ori_interval)
+    print("")
+
     gen_mean = get_mean_consistency(generated)
     print(f"Mean Consistency of Generated Pieces: {gen_mean}")
+    if len(generated) > 1:
+        gen_interval = compute_confidence_interval(generated, n_resamples=args.n_resamples,
+                                                   confidence_level=args.confidence_level)
+        print(gen_interval)
     print("")
 
     return
