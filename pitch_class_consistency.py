@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-from scipy.stats import bootstrap
+from scipy.stats import bootstrap, entropy
 
 import pretty_midi
 
@@ -78,6 +78,16 @@ def compute_total_variation_distance(histogram_1, histogram_2):
     return 0.5 * np.sum(hist_res)
 
 
+def compute_total_dkl(histogram_1, histogram_2):
+    """
+    Compute the Kullback–Leibler Distance between two histograms.
+    Returns a float value.
+    """
+    hist_1 = np.array(histogram_1)
+    hist_2 = np.array(histogram_2)
+    return entropy(hist_1, hist_2, base=2)
+
+
 def get_mean_consistency(pieces):
     """
     Gets the mean value of consistency among a list of pieces.
@@ -130,7 +140,12 @@ def main():
 
                 distances = []
                 for i in range(len(histograms) - 1):    # calculate the distance between histograms pair by pair
-                    dist = compute_total_variation_distance(histograms[i], histograms[i+1])
+                    p = np.array(histograms[i]) + 1e-6
+                    q = np.array(histograms[i+1]) + 1e-6
+                    p = p/p.sum()
+                    q = q/q.sum()
+                    # dist = compute_total_variation_distance(p, q)
+                    dist = compute_total_dkl(p, q)
                     distances.append(dist)
                 consistency = np.mean(np.array(distances))  # consistency is given by the mean value of distances within a piece
 
