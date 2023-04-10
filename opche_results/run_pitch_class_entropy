@@ -1,0 +1,23 @@
+#!/bin/bash
+
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/jazz -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/jazz.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/jazz-new_notation -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/jazz-new_notation.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/maestro -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/maestro.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/maestro-new_notation -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/maestro-new_notation.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/POP909 -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/POP909.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/POP909-new_notation -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/POP909-new_notation.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/snes -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/snes.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/snes-new_notation -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/snes-new_notation.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/nesmdb_midi -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/nesmdb.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/nesmdb_midi-new_notation -n_resamples 9999 -confidence_level 0.95 --print_each > opche_results/nesmdb-new_notation.txt
+
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/jazz -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/jazz-new_notation -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/maestro -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/maestro-new_notation -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/POP909 -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/POP909-new_notation -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/snes -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/snes-new_notation -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/nesmdb_midi -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt
+python3 pitch_class_entropy.py -midi_root Generated-pieces-256/nesmdb_midi-new_notation -n_resamples 9999 -confidence_level 0.95 >> opche_results/summary.txt

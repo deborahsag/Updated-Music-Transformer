@@ -1,0 +1,25 @@
+#!/bin/bash
+
+PARTITIONS=8
+
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/jazz" -num_partitions $PARTITIONS --print_each > consistency_results/jazz.txt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/jazz-new_notation" -num_partitions $PARTITIONS --print_each > consistency_results/jazz-new_notation.twt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/maestro" -num_partitions $PARTITIONS --print_each > consistency_results/maestro.txt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/maestro-new_notation" -num_partitions $PARTITIONS --print_each > consistency_results/maestro-new_notation.txt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/POP909" -num_partitions $PARTITIONS --print_each > consistency_results/POP909.txt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/POP909-new_notation" -num_partitions $PARTITIONS --print_each > consistency_results/POP909-new_notation.txt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/snes" -num_partitions $PARTITIONS --print_each > consistency_results/snes.txt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/snes-new_notation" -num_partitions $PARTITIONS --print_each > consistency_results/snes-new_notation.txt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/nesmdb_midi" -num_partitions $PARTITIONS --print_each > consistency_results/nesmdb.txt
+#python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/nesmdb_midi-new_notation" -num_partitions $PARTITIONS --print_each > consistency_results/nesmdb-new_notation.txt
+
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/jazz" -num_partitions $PARTITIONS > consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/jazz-new_notation" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/maestro" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/maestro-new_notation" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/POP909" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/POP909-new_notation" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/snes" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/snes-new_notation" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/nesmdb_midi" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
+python3 pitch_class_consistency.py -midi_root "Generated-pieces-256/nesmdb_midi-new_notation" -num_partitions $PARTITIONS >> consistency_results/summary_$PARTITIONS.txt
