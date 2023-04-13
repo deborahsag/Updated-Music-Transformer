@@ -54,7 +54,9 @@ def main():
             if ext == ".mid":
                 midi_data = pretty_midi.PrettyMIDI(midi_path)
                 hist = midi_data.get_pitch_class_histogram()
-                ent = entropy(hist, base=2)
+                p = np.array(hist) + 1e-6
+                p = p / p.sum()
+                ent = entropy(p, base=2)
 
                 if midi_name.startswith("original"):
                     original[midi_name] = ent
